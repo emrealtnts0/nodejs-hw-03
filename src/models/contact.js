@@ -15,7 +15,7 @@ const contactsSchema = new Schema(
     },
     isFavourite: {
       type: Boolean,
-      default: false
+      default: false,
     },
     contactType: {
       type: String,
@@ -27,9 +27,8 @@ const contactsSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-    collection: 'mongodb_contacts'
+    collection: 'mongodb_contacts',
   },
 );
-
-const Contact = model('Contact', contactsSchema);
-export default Contact;
+const contacts = model('contacts', contactsSchema);
+export default contacts;

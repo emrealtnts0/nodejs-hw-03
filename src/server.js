@@ -1,42 +1,27 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import contactsRouter from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import { initMongoDB } from './db/initMongoConnection.js';
 
-dotenv.config();
+export const startServer = () => {
+  const app = express();
 
-const startServer = async () => {
-  try {
-    // Initialize MongoDB connection
-    await initMongoDB();
+  // Middlewares
+  app.use(express.json());
 
-    const app = express();
+  // Routes
+  app.use('/contacts', contactsRouter);
 
-    // Middlewares
-    app.use(express.json());
+  // 404 Handler
+  app.use(notFoundHandler);
 
-    // Routes
-    app.use('/contacts', contactsRouter);
+  // Error Handler
+  app.use(errorHandler);
 
-    // 404 Handler
-    app.use(notFoundHandler);
+  const PORT = process.env.PORT || 3000;
+  const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 
-    // Error Handler
-    app.use(errorHandler);
-
-    const PORT = process.env.PORT || 3000;
-    const server = app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-
-    return server;
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  return server;
 };
-
-// Start the server
-startServer();
