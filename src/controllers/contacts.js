@@ -1,78 +1,60 @@
-import createHttpError from 'http-errors';
 import * as contactsService from '../services/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import createError from 'http-errors';
+import mongoose from 'mongoose';
 
-const getAllContactsController = async (req, res) => {
+const getContacts = async (req, res) => {
   const contacts = await contactsService.getAllContacts();
   res.json({
     status: 200,
-    message: 'Contacts list retrieved successfully!',
+    message: 'Successfully retrieved contacts',
     data: contacts,
   });
 };
 
-const getContactByIdController = async (req, res) => {
-  const { contactId } = req.params;
-  const contact = await contactsService.getContactById(contactId);
-
-  if (!contact) {
-    throw createHttpError(404, `Contact with ID ${contactId} not found. Please check the ID and try again.`);
-  }
-
+const getContact = async (req, res) => {
+  const contact = await contactsService.getContactById(req.params.contactId);
   res.json({
     status: 200,
-    message: 'Contact found successfully!',
+    message: 'Successfully retrieved contact',
     data: contact,
   });
 };
 
-const createContactController = async (req, res) => {
-  const { name, phoneNumber, contactType } = req.body;
-  
-  // Basic validation
-  if (!name || !phoneNumber || !contactType) {
-    throw createHttpError(400, 'Please provide name, phone number, and contact type.');
-  }
-
-  const contact = await contactsService.createContact(req.body);
-  
+const createContact = async (req, res) => {
+  const newContact = await contactsService.createContact(req.body);
   res.status(201).json({
     status: 201,
-    message: 'Contact created successfully!',
-    data: contact,
+    message: 'Successfully created a contact!',
+    data: newContact,
   });
 };
 
-const updateContactController = async (req, res) => {
-  const { contactId } = req.params;
-  const contact = await contactsService.updateContact(contactId, req.body);
-
-  if (!contact) {
-    throw createHttpError(404, `Contact with ID ${contactId} not found. Please check the ID and try again.`);
-  }
-
+const updateContact = async (req, res) => {
+  const updatedContact = await contactsService.updateContact(
+    req.params.contactId,
+    req.body,
+  );
   res.json({
     status: 200,
-    message: 'Contact updated successfully!',
-    data: contact,
+    message: 'Successfully patched a contact!',
+    data: updatedContact,
   });
 };
 
-const deleteContactController = async (req, res) => {
+const deleteContact = async (req, res) => {
   const { contactId } = req.params;
-  const contact = await contactsService.deleteContact(contactId);
-
-  if (!contact) {
-    throw createHttpError(404, `Contact with ID ${contactId} not found. Please check the ID and try again.`);
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    throw createError(404, 'Contact not found');
   }
-
-  res.status(204).send();
+  await contactsService.deleteContact(contactId);
+  res.status(204).end();
 };
 
 export default {
-  getAllContacts: ctrlWrapper(getAllContactsController),
-  getContactById: ctrlWrapper(getContactByIdController),
-  createContact: ctrlWrapper(createContactController),
-  updateContact: ctrlWrapper(updateContactController),
-  deleteContact: ctrlWrapper(deleteContactController)
+  getContacts: ctrlWrapper(getContacts),
+  getContact: ctrlWrapper(getContact),
+  createContact: ctrlWrapper(createContact),
+  updateContact: ctrlWrapper(updateContact),
+  deleteContact: ctrlWrapper(deleteContact),
 };

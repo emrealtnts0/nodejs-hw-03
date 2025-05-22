@@ -38,11 +38,41 @@ A RESTful API for managing contacts built with Node.js, Express, and MongoDB.
 
 ## API Endpoints
 
-- `GET /contacts` - Get all contacts
-- `GET /contacts/:contactId` - Get a specific contact
-- `POST /contacts` - Create a new contact
-- `PATCH /contacts/:contactId` - Update a contact
-- `DELETE /contacts/:contactId` - Delete a contact
+### Get All Contacts
+- **GET** `/contacts`
+- **Description**: Retrieve all contacts from the database
+
+### Get Contact by ID
+- **GET** `/contacts/:contactId`
+- **Description**: Retrieve a specific contact by ID
+- **Parameters**: 
+  - `contactId` (path parameter) - The ID of the contact to retrieve
+
+### Create New Contact
+- **POST** `/contacts`
+- **Description**: Create a new contact
+- **Required Fields**: `name`, `phoneNumber`, `contactType`
+
+### Update Contact
+- **PATCH** `/contacts/:contactId`
+- **Description**: Update an existing contact
+- **Parameters**: 
+  - `contactId` (path parameter) - The ID of the contact to update
+
+### Delete Contact
+- **DELETE** `/contacts/:contactId`
+- **Description**: Delete a contact by ID
+- **Parameters**: 
+  - `contactId` (path parameter) - The ID of the contact to delete
+
+## Error Responses
+
+The API returns error responses with appropriate HTTP status codes:
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `404` - Not Found (e.g., "Contact not found" when trying to get/update/delete a non-existent contact)
+- `500` - Internal Server Error
 
 ## Contact Schema
 
@@ -53,16 +83,5 @@ A RESTful API for managing contacts built with Node.js, Express, and MongoDB.
   email: String,       // optional
   isFavourite: Boolean,// optional, defaults to false
   contactType: String  // required, enum: ['work', 'home', 'personal']
-}
-```
-
-## Error Handling
-
-The API uses proper HTTP status codes and returns errors in the following format:
-```javascript
-{
-  status: number,
-  message: string,
-  data: string
 }
 ``` 
