@@ -23,6 +23,11 @@ const contactsSchema = new Schema(
       enum: ['work', 'home', 'personal'],
       default: 'personal',
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    }
   },
   {
     timestamps: true,
@@ -30,5 +35,9 @@ const contactsSchema = new Schema(
     collection: 'mongodb_contacts',
   },
 );
+
+// Add index for faster queries by userId
+contactsSchema.index({ userId: 1 });
+
 const contacts = model('contacts', contactsSchema);
 export default contacts;

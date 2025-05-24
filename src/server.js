@@ -1,5 +1,7 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import contactsRouter from './routers/contacts.js';
+import authRouter from './routers/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -8,9 +10,11 @@ export const startServer = () => {
 
   // Middlewares
   app.use(express.json());
+  app.use(cookieParser());
 
   // Routes
-  app.use('/contacts', contactsRouter);
+  app.use('/api/contacts', contactsRouter);
+  app.use('/api/auth', authRouter);
 
   // 404 Handler
   app.use(notFoundHandler);

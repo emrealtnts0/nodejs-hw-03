@@ -1,7 +1,7 @@
 import createError from 'http-errors';
 import contacts from '../models/contact.js';
 
-export const getAllContacts = async (query) => {
+export const getAllContacts = async (userId, query) => {
   const {
     page = 1,
     perPage = 10,
@@ -12,7 +12,7 @@ export const getAllContacts = async (query) => {
   } = query;
 
   // Build filter object
-  const filter = {};
+  const filter = { userId };
   if (type) filter.contactType = type;
   if (isFavourite !== undefined) filter.isFavourite = isFavourite === 'true';
 
@@ -45,30 +45,37 @@ export const getAllContacts = async (query) => {
   };
 };
 
-export const getContactById = async (id) => {
-  const contact = await contacts.findById(id);
+export const getContactById = async (userId, id) => {
+  const contact = await contacts.findOne({ _id: id, userId });
   if (!contact) {
     throw createError(404, 'Contact not found');
   }
   return contact;
 };
 
-export const createContact = async (contactsData) => {
+export const createContact = async (userId, contactsData) => {
   const { name, phoneNumber, contactType } = contactsData;
 
   if (!name || !phoneNumber || !contactType) {
     throw createError(400, 'Missing required fields');
   }
 
-  const newContact = new contacts(contactsData);
+  const newContact = new contacts({
+    ...contactsData,
+    userId
+  });
   return await newContact.save();
 };
 
-export const updateContact = async (id, updateData) => {
-  const updatedContact = await contacts.findByIdAndUpdate(id, updateData, {
-    new: true,
-    runValidators: true,
-  });
+export const updateContact = async (userId, id, updateData) => {
+  const updatedContact = await contacts.findOneAndUpdate(
+    { _id: id, userId },
+    updateData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
   if (!updatedContact) {
     throw createError(404, 'Contact not found');
@@ -77,8 +84,8 @@ export const updateContact = async (id, updateData) => {
   return updatedContact;
 };
 
-export const deleteContact = async (id) => {
-  const deletedContact = await contacts.findByIdAndDelete(id);
+export const deleteContact = async (userId, id) => {
+  const deletedContact = await contacts.findOneAndDelete({ _id: id, userId });
   if (!deletedContact) {
     throw createError(404, 'Contact not found');
   }

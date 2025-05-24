@@ -4,7 +4,7 @@ import createError from 'http-errors';
 import mongoose from 'mongoose';
 
 const getContacts = async (req, res) => {
-  const contacts = await contactsService.getAllContacts(req.query);
+  const contacts = await contactsService.getAllContacts(req.user._id, req.query);
   res.json({
     status: 200,
     message: 'Successfully found contacts!',
@@ -13,7 +13,7 @@ const getContacts = async (req, res) => {
 };
 
 const getContact = async (req, res) => {
-  const contact = await contactsService.getContactById(req.params.contactId);
+  const contact = await contactsService.getContactById(req.user._id, req.params.contactId);
   res.json({
     status: 200,
     message: 'Successfully retrieved contact',
@@ -22,7 +22,7 @@ const getContact = async (req, res) => {
 };
 
 const createContact = async (req, res) => {
-  const newContact = await contactsService.createContact(req.body);
+  const newContact = await contactsService.createContact(req.user._id, req.body);
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
@@ -32,8 +32,9 @@ const createContact = async (req, res) => {
 
 const updateContact = async (req, res) => {
   const updatedContact = await contactsService.updateContact(
+    req.user._id,
     req.params.contactId,
-    req.body,
+    req.body
   );
   res.json({
     status: 200,
@@ -47,7 +48,7 @@ const deleteContact = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     throw createError(404, 'Contact not found');
   }
-  await contactsService.deleteContact(contactId);
+  await contactsService.deleteContact(req.user._id, contactId);
   res.status(204).end();
 };
 

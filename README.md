@@ -1,6 +1,74 @@
-# Contacts API
+# Node.js Homework 5 - Authentication
 
-A RESTful API for managing contacts built with Node.js, Express, and MongoDB.
+This is a REST API for managing contacts with user authentication.
+
+## Environment Variables
+
+The following environment variables are required:
+
+- `PORT` - The port on which the server will run (default: 3000)
+- `NODE_ENV` - The environment (development/production)
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET` - Secret key for JWT token generation
+
+## Deployment on Render.com
+
+The application is configured to deploy on render.com with the following settings:
+
+- Service Type: Web Service
+- Environment: Node.js
+- Build Command: `npm install`
+- Start Command: `node src/index.js`
+- Port: 3001 (configured in render.yaml)
+
+### Required Environment Variables on Render.com
+
+Set these environment variables in your render.com dashboard:
+
+1. `MONGODB_URI` - Your MongoDB connection string
+2. `JWT_SECRET` - A secure secret key for JWT tokens
+3. `NODE_ENV` - Set to "production"
+
+### Health Check
+
+The service includes a health check endpoint at `/api/contacts` that render.com will use to monitor the service.
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/refresh` - Refresh access token
+- `POST /api/auth/logout` - Logout user
+
+### Contacts
+
+All contact endpoints require authentication via Bearer token.
+
+- `GET /api/contacts` - Get all contacts (with pagination, sorting, and filtering)
+- `GET /api/contacts/:contactId` - Get a single contact
+- `POST /api/contacts` - Create a new contact
+- `PATCH /api/contacts/:contactId` - Update a contact
+- `DELETE /api/contacts/:contactId` - Delete a contact
+
+## Local Development
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create a `.env` file with the required environment variables
+4. Start the server: `npm start`
+
+## Testing
+
+The API can be tested using tools like Postman or curl. Remember to:
+
+1. Register a user first
+2. Login to get an access token
+3. Include the access token in the Authorization header for contact endpoints:
+   ```
+   Authorization: Bearer <access_token>
+   ```
 
 ## Features
 
