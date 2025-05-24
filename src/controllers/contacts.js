@@ -4,10 +4,10 @@ import createError from 'http-errors';
 import mongoose from 'mongoose';
 
 const getContacts = async (req, res) => {
-  const contacts = await contactsService.getAllContacts();
+  const contacts = await contactsService.getAllContacts(req.query);
   res.json({
     status: 200,
-    message: 'Successfully retrieved contacts',
+    message: 'Successfully found contacts!',
     data: contacts,
   });
 };
