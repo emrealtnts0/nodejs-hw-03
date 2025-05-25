@@ -1,54 +1,57 @@
-# Contacts API
+# Contact Management API with Validation
 
-A RESTful API for managing contacts built with Node.js, Express, and MongoDB.
+This project implements a Contact Management API with advanced validation, pagination, sorting, and filtering features.
 
-## Features
+## 🚀 Implementation Steps
 
-- CRUD operations for contacts
-- MongoDB database integration
-- Error handling middleware
-- Input validation
-- RESTful API design
+### Step 1: Branch Setup
+- Created `hw4-validation` branch from `hw3-crud`
+- All development is done in the `hw4-validation` branch
 
-## Prerequisites
+### Step 2: Data Validation
+- Implemented `validateBody` middleware for request validation
+- Added validation to POST and PATCH routes
+- Created validation schemas with the following rules:
+  ```javascript
+  {
+    name: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 20
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 20
+    },
+    email: {
+      type: String,
+      optional: true,
+      format: 'email'
+    },
+    isFavourite: {
+      type: Boolean,
+      default: false
+    },
+    contactType: {
+      type: String,
+      required: true,
+      enum: ['work', 'home', 'personal'],
+      default: 'personal'
+    }
+  }
+  ```
+- Added `isValidId` middleware for ID validation
+- Applied ID validation to all routes using contactId
 
-- Node.js (v14 or higher)
-- MongoDB database
-
-## Setup
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   PORT=3000
-   ```
-4. Start the server:
-   ```bash
-   # Development mode
-   npm run dev
-   
-   # Production mode
-   npm start
-   ```
-
-## API Endpoints
-
-### Get All Contacts
-- **GET** `/contacts`
-- **Description**: Retrieve all contacts with pagination, sorting, and filtering
-- **Query Parameters**:
-  - `page` (optional): Page number (default: 1)
-  - `perPage` (optional): Items per page (default: 10)
-  - `sortBy` (optional): Field to sort by (default: 'name')
-  - `sortOrder` (optional): Sort order ('asc' or 'desc', default: 'asc')
-  - `type` (optional): Filter by contact type ('work', 'home', 'personal')
-  - `isFavourite` (optional): Filter by favorite status (true/false)
-- **Response Format**:
+### Step 3: Pagination
+- Implemented pagination for GET `/contacts` route
+- Query parameters:
+  - `page` (default: 1) - Page number
+  - `perPage` (default: 10) - Items per page
+- Response format:
   ```json
   {
     "status": 200,
@@ -65,104 +68,101 @@ A RESTful API for managing contacts built with Node.js, Express, and MongoDB.
   }
   ```
 
+### Step 4: Sorting
+- Added sorting capability to GET `/contacts` route
+- Query parameters:
+  - `sortBy` (default: 'name') - Field to sort by
+  - `sortOrder` (default: 'asc') - Sort direction ('asc' or 'desc')
+- Example: `GET /contacts?sortBy=name&sortOrder=desc`
+
+### Step 5: Filtering (Optional)
+- Implemented filtering for GET `/contacts` route
+- Query parameters:
+  - `type` - Filter by contact type ('work', 'home', 'personal')
+  - `isFavourite` - Filter by favorite status (true/false)
+- Example: `GET /contacts?type=work&isFavourite=true`
+
+## 🛠️ API Endpoints
+
+### Get All Contacts
+- **GET** `/contacts`
+- **Query Parameters**:
+  - Pagination: `page`, `perPage`
+  - Sorting: `sortBy`, `sortOrder`
+  - Filtering: `type`, `isFavourite`
+- **Response**: 200 OK with paginated, sorted, and filtered data
+
 ### Get Contact by ID
 - **GET** `/contacts/:contactId`
-- **Description**: Retrieve a specific contact by ID
 - **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to retrieve
+  - `contactId` (path parameter)
 - **Validation**: ID format is validated automatically
+- **Response**: 200 OK with contact data
 
 ### Create New Contact
 - **POST** `/contacts`
-- **Description**: Create a new contact
 - **Validation Rules**:
   - `name`: Required, 3-20 characters
   - `phoneNumber`: Required, 3-20 characters
-  - `email`: Optional, must be valid email format
-  - `contactType`: Required, must be one of: 'work', 'home', 'personal'
-  - `isFavourite`: Optional, boolean (default: false)
+  - `email`: Optional, valid email format
+  - `contactType`: Required, enum: ['work', 'home', 'personal']
+  - `isFavourite`: Optional, boolean
+- **Response**: 201 Created with new contact data
 
 ### Update Contact
 - **PATCH** `/contacts/:contactId`
-- **Description**: Update an existing contact
 - **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to update
-- **Validation**: Same rules as Create Contact, but all fields are optional
-- **ID Validation**: Contact ID format is validated automatically
+  - `contactId` (path parameter)
+- **Validation**: Same as Create Contact, but all fields optional
+- **Response**: 200 OK with updated contact data
 
 ### Delete Contact
 - **DELETE** `/contacts/:contactId`
-- **Description**: Delete a contact by ID
 - **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to delete
-- **ID Validation**: Contact ID format is validated automatically
+  - `contactId` (path parameter)
+- **Response**: 200 OK with deleted contact data
 
-## Error Responses
+## ⚙️ Error Handling
 
-The API returns error responses with appropriate HTTP status codes:
+The API returns appropriate error responses:
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request (validation errors, invalid ID format)
-- `404` - Not Found (e.g., "Contact not found" when trying to get/update/delete a non-existent contact)
+- `404` - Not Found
 - `500` - Internal Server Error
 
-## Validation Rules
+## 🚀 Setup and Installation
 
-### Contact Schema
-```javascript
-{
-  name: {
-    type: String,
-    required: true,
-    minLength: 3,
-    maxLength: 20
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    minLength: 3,
-    maxLength: 20
-  },
-  email: {
-    type: String,
-    optional: true,
-    format: 'email'
-  },
-  isFavourite: {
-    type: Boolean,
-    default: false
-  },
-  contactType: {
-    type: String,
-    required: true,
-    enum: ['work', 'home', 'personal'],
-    default: 'personal'
-  }
-}
-```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create `.env` file with required environment variables:
+   ```
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/contacts_db
+   ```
+4. Start the server:
+   ```bash
+   npm run dev
+   ```
 
-## Query Parameters
+## 🧪 Testing
 
-### Pagination
-- `page`: Page number (default: 1)
-- `perPage`: Items per page (default: 10)
+All features have been tested and verified:
+- ✅ Data validation (POST/PATCH requests)
+- ✅ ID validation
+- ✅ Pagination
+- ✅ Sorting
+- ✅ Filtering
+- ✅ Error handling
 
-### Sorting
-- `sortBy`: Field to sort by (default: 'name')
-- `sortOrder`: Sort direction ('asc' or 'desc', default: 'asc')
-
-### Filtering
-- `type`: Filter by contact type ('work', 'home', 'personal')
-- `isFavourite`: Filter by favorite status (true/false)
-
-## Contact Schema
-
-```javascript
-{
-  name: String,        // required
-  phoneNumber: String, // required
-  email: String,       // optional
-  isFavourite: Boolean,// optional, defaults to false
-  contactType: String  // required, enum: ['work', 'home', 'personal']
-}
-``` 
+## 🛠️ Technologies Used
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- Joi (validation)
+- createHttpError
+- dotenv 
