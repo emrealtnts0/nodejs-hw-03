@@ -2,6 +2,11 @@
 
 This project implements a Contact Management API with advanced validation, pagination, sorting, and filtering features.
 
+## 🌐 Live Demo
+API is deployed and available at: [https://nodejs-hw-04-8c7n.onrender.com](https://nodejs-hw-04-8c7n.onrender.com)
+
+Visit the base URL to see the API documentation and available endpoints.
+
 ## 🚀 Implementation Steps
 
 ### Step 1: Branch Setup
